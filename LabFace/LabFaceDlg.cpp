@@ -91,6 +91,7 @@ BEGIN_MESSAGE_MAP(CLabFaceDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON2, &CLabFaceDlg::OnBnClickedButton2)
 	ON_BN_CLICKED(IDC_BUTTON3, &CLabFaceDlg::OnBnClickedButton3)
 	ON_BN_CLICKED(IDC_BUTTON4, &CLabFaceDlg::OnBnClickedButton4)
+	ON_BN_CLICKED(IDC_BUTTON5, &CLabFaceDlg::OnBnClickedButton5)
 END_MESSAGE_MAP()
 
 
@@ -195,7 +196,7 @@ void CLabFaceDlg::OnBnClickedButton1()
 	// Detect faces in current frame
 
 	// Open webcam
-	VideoCapture cap = (0);
+	VideoCapture cap = (-1);
 
 	// Load in Haar filter that detect faces
 	String face_cascade_name = "D:/VS 2015 Project/LabFace_1/LabFace/haarcascade_frontalface_default.xml";
@@ -205,8 +206,8 @@ void CLabFaceDlg::OnBnClickedButton1()
 	
 
 	int num_components = 10; // Number of Eigenfaces 
-	double threshold = 10.0; // Set threshold for face recognizer 
-	Ptr<FaceRecognizer> model1 = createEigenFaceRecognizer(num_components, threshold);
+	//double threshold = 0; // Set threshold for face recognizer 
+	Ptr<FaceRecognizer> model1 = createEigenFaceRecognizer(num_components);
 	// Load the eigenfaces file created in trainning section.
 	model1->load("D:/VS 2015 Project/LabFace_1/LabFace/eigenfaces_at.yml");
 	Mat mean = model1->getMat("mean");
@@ -280,10 +281,23 @@ void CLabFaceDlg::OnBnClickedButton1()
 				int h = h_temp*1.4;
 				Rect biggerRect(x, y, w, h);
 
-				
-				Mat face_image = original(biggerRect).clone();
+				Mat face_image;
+				if (0 <= biggerRect.x
+					&& 0 <= biggerRect.width
+					&& biggerRect.x + biggerRect.width <= original.cols
+					&& 0 <= biggerRect.y
+					&& 0 <= biggerRect.height
+					&& biggerRect.y + biggerRect.height <= original.rows){
+					
+					face_image = original(biggerRect).clone();
+					imshow("face_img", face_image);
+				}
+
+				else {
+					original.copyTo(face_image);
+				}
 				//rectangle(original, biggerRect, Scalar(255, 255, 0), 2);
-				//imshow("face_img", face_image);
+				
 
 				dlib::cv_image <dlib::bgr_pixel> cimg(face_image);
 				std::vector<dlib::rectangle> faces_dlib = detector(cimg);
@@ -649,4 +663,10 @@ void CLabFaceDlg::OnBnClickedButton4()
 		}
 		waitKey(100);
 	}
+}
+
+
+void CLabFaceDlg::OnBnClickedButton5()
+{
+	// TODO: Add your control notification handler code here
 }
