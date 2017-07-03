@@ -250,3 +250,6 @@ ModelManifest.xml
 *.bat
 *.yml
 *.xml
+*.pdf
+*.docx
+*.pptx

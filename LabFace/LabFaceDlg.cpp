@@ -196,7 +196,7 @@ void CLabFaceDlg::OnBnClickedButton1()
 	// Detect faces in current frame
 
 	// Open webcam
-	VideoCapture cap = (-1);
+	VideoCapture cap = (0);
 
 	// Load in Haar filter that detect faces
 	String face_cascade_name = "D:/VS 2015 Project/LabFace_1/LabFace/haarcascade_frontalface_default.xml";
@@ -206,8 +206,8 @@ void CLabFaceDlg::OnBnClickedButton1()
 	
 
 	int num_components = 10; // Number of Eigenfaces 
-	//double threshold = 0; // Set threshold for face recognizer 
-	Ptr<FaceRecognizer> model1 = createEigenFaceRecognizer(num_components);
+	double threshold = 10000; // Set threshold for face recognizer 
+	Ptr<FaceRecognizer> model1 = createEigenFaceRecognizer(num_components, threshold);
 	// Load the eigenfaces file created in trainning section.
 	model1->load("D:/VS 2015 Project/LabFace_1/LabFace/eigenfaces_at.yml");
 	Mat mean = model1->getMat("mean");
@@ -369,7 +369,7 @@ void CLabFaceDlg::OnBnClickedButton2()
 	using namespace dlib;
 
 	Mat frame;
-	VideoCapture cap(-1);
+	VideoCapture cap(0);
 
 
 	dlib::image_window win, win_faces;
@@ -503,8 +503,9 @@ void CLabFaceDlg::OnBnClickedButton3()
 
 	int heiget = images[0].rows;
 	
+	
 
-	Mat testSample = images[images.size() - 1];
+	Mat testSample = images[images.size() - 1].clone();
 	int testLabel = labels[labels.size() - 1];
 	images.pop_back();
 	labels.pop_back();
@@ -519,9 +520,8 @@ void CLabFaceDlg::OnBnClickedButton3()
 
 	switch (recognizer)
 	{
-	//case 1:
+	case 1:
 
-	default:
 	{
 		cout << recognizer << endl;
 		Ptr<FaceRecognizer> model = createEigenFaceRecognizer();
@@ -541,6 +541,7 @@ void CLabFaceDlg::OnBnClickedButton3()
 		Mat mean = model->getMat("mean");
 
 		imshow("mean", norm_0_255(mean.reshape(1, images[0].rows)));
+		imwrite("Mean.jpg", norm_0_255(mean.reshape(1, images[0].rows)));
 
 		waitKey(80);
 
