@@ -84,7 +84,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>D:\library\dlib-19.4;D:\library\opencv-2.4.13.2\opencv\build\include\opencv2;D:\library\opencv-2.4.13.2\opencv\build\include\opencv;D:\library\opencv-2.4.13.2\opencv\build\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>$(VC_IncludePath);D:\library\dlib-19.4;D:\library\opencv-2.4.13.2\opencv\build\include\opencv2;D:\library\opencv-2.4.13.2\opencv\build\include\opencv;D:\library\opencv-2.4.13.2\opencv\build\include;$(WindowsSDK_IncludePath)</IncludePath>
     <LibraryPath>D:\library\dlib-19.4\build\dlib\Release;D:\library\opencv-2.4.13.2\opencv\build\x64\vc14\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

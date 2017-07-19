@@ -605,66 +605,72 @@ void CLabFaceDlg::OnBnClickedButton3()
 void CLabFaceDlg::OnBnClickedButton4()
 {
 
+	// video input from default device.
+	VideoCapture cap = (0);
 
-	// load single images in /Face/ folder and its csv file to create face samples
-	Mat frame;
-	string fn_csv = "./Face/FaceList.csv";
-	vector<Mat> images;
-	vector<int> labels;
+	int num_components = 10; // Number of Eigenfaces 
+	double threshold = 10000; // Set threshold for face recognizer 
+	Ptr<FaceRecognizer> model1 = createEigenFaceRecognizer(num_components, threshold);
+	// Load the eigenfaces file created in trainning section.
+	model1->load("D:/VS 2015 Project/LabFace_1/LabFace/eigenfaces_at.yml");
+	Mat mean = model1->getMat("mean");
 
-	
+	/*Ptr<FaceRecognizer> model2 = createFisherFaceRecognizer();
+	model2->load("fisherfaces_at.yml");
 
-	try {
-		read_csv(fn_csv, images, labels);
-	}
-	catch (cv::Exception& e) {
-		cout << "Error opening file \"" << fn_csv << "\". Reason: " << e.msg << endl;
-		waitKey(0);
-	}
-	cout << images.size() << endl;
+	Ptr<FaceRecognizer> model3 = createLBPHFaceRecognizer();
+	model3->load("LBPHF_at.yml");*/
+
+
+	//dlib::image_window win, win_faces;
 	dlib::frontal_face_detector detector = dlib::get_frontal_face_detector();
 	dlib::shape_predictor pose_model;
-	dlib::deserialize("shape_predictor_68_face_landmarks.dat") >> pose_model;
+	dlib::deserialize("D:/VS 2015 Project/LabFace_1/LabFace/shape_predictor_68_face_landmarks.dat") >> pose_model;
 	int frm_num = 0;
-	for (int frm_num = 0; frm_num< labels.size(); frm_num++){
 
 
-		dlib::cv_image <dlib::bgr_pixel> cimg(images[frm_num]);
+	Mat frame;
+	Mat face_image;
+	cap >> frame;
+	while (frame.empty()!=1) {
+
+		
+		cap >> frame;  // load video frame into opencv Mat structure
+
+		dlib::cv_image <dlib::bgr_pixel> cimg(frame);
 
 		// ask the face detector to give us a list of bounding boxes
-		//around all the faces in the image
+		// around all the faces in the image
 		std::vector<dlib::rectangle> faces = detector(cimg);
 
-		//ask the shape_predictor to tell us the pose of
+		// ask the shape_predictor to tell us the pose of
 		// each face we detected.
 		std::vector < dlib::full_object_detection> shapes;
-		imshow("frame", images[frm_num]);
+		
 		for (unsigned long i = 0; i < faces.size(); i++) {
 			shapes.push_back(pose_model(cimg, faces[i]));
 
+			//win.clear_overlay();
+			//win.set_image(cimg);
+			//win.add_overlay(render_face_detections(shapes));
+
 			dlib::array<dlib::array2d<dlib::bgr_pixel>>face_chips;
 			extract_image_chips(cimg, get_face_chip_details(shapes), face_chips);
-			Mat faces;
-			faces = toMat(face_chips[i]);
+			//win_faces.set_image(tile_images(face_chips));
+
+			// transfer dlib image to opencv Mat structure
+			Mat faces = toMat(face_chips[i]);
 			imshow("detected", faces);
-
-
-			// !!!Please change to the correct lab members' name!!!
-			string face_str = "./Face_croped/Face";
-			string file_type = ".jpeg";
-			char face_char[21];
-			face_str = face_str + itoa(frm_num, face_char, 10) + file_type;
-			//cout << face_str << endl;
-
-			
-
-
-			imwrite(face_str, faces);
-
 		}
-		waitKey(100);
+		imshow("Webcam", frame);
+		int c = waitKey(33);
+		if (c == 27) {
+			destroyWindow("Webcam");
+			break;
+		}
 	}
 }
+
 
 
 void CLabFaceDlg::OnBnClickedButton5()
